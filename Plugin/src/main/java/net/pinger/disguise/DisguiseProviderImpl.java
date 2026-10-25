@@ -1,6 +1,5 @@
 package net.pinger.disguise;
 
-import com.mojang.authlib.GameProfile;
 import net.pinger.disguise.exception.ValidationException;
 import net.pinger.disguise.packet.PacketProvider;
 import net.pinger.disguise.player.info.PlayerUpdateInfo;
@@ -10,7 +9,6 @@ import net.pinger.disguise.skin.Skin;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Field;
 
 public class DisguiseProviderImpl implements DisguiseProvider {
 
@@ -144,15 +142,7 @@ public class DisguiseProviderImpl implements DisguiseProvider {
     }
 
     private void updateNickname(Player player, String name) {
-        try {
-            Field field = GameProfile.class.getDeclaredField("name");
-
-            // Set the field accessible and update it
-            field.setAccessible(true);
-            field.set(this.provider.getGameProfile(player), name);
-        } catch (Exception e) {
-            throw new ValidationException("Failed to update player name!", e);
-        }
+        this.provider.updateName(player, name);
 
         player.setDisplayName(name);
         player.setPlayerListName(name);

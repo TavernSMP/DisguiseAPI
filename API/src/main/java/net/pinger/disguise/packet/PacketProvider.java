@@ -3,7 +3,6 @@ package net.pinger.disguise.packet;
 import com.mojang.authlib.GameProfile;
 import net.pinger.disguise.skin.Skin;
 import net.pinger.disguise.player.update.PlayerUpdate;
-import net.pinger.disguise.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -48,6 +47,8 @@ public interface PacketProvider {
      */
 
     void clearProperties(Player player);
+
+    void updateName(Player player, String name);
 
     /**
      * Sends a specific packet or multiple packets to this player.
@@ -120,12 +121,6 @@ public interface PacketProvider {
             return;
         }
 
-        // Check if the version is at least 1.16
-        // Which changed the way you can hide a player
-        // Using "Player#hidePlayer(Plugin, Player)"
-        // Instead of "Player#hidePlayer(Player)"
-        final boolean version = MinecraftServer.atLeast("1.16");
-
         // Hide the player
         // To all other players
         for (Player other : Bukkit.getOnlinePlayers()) {
@@ -133,11 +128,7 @@ public interface PacketProvider {
                 continue;
             }
 
-            if (version) {
-                other.hidePlayer(plugin, player);
-            } else {
-                other.hidePlayer(player);
-            }
+            other.hidePlayer(plugin, player);
         }
 
         // Now loop once again
@@ -147,11 +138,7 @@ public interface PacketProvider {
                 continue;
             }
 
-            if (version) {
-                other.showPlayer(plugin, player);
-            } else {
-                other.showPlayer(player);
-            }
+            other.showPlayer(plugin, player);
         }
     }
 

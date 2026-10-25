@@ -1,73 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>DisguiseAPI</artifactId>
-        <groupId>net.pinger.disguise</groupId>
-        <version>1.4.0</version>
-    </parent>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
+    <parent>
+        <groupId>net.pinger.disguise</groupId>
+        <artifactId>DisguiseAPI</artifactId>
+        <version>2.0.0</version>
+    </parent>
     <artifactId>Plugin</artifactId>
-    <version>${project.parent.version}</version>
-
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <configuration>
-                            <outputDirectory>D:\Dica\Projekti\Servers\Plugins</outputDirectory>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <configuration>
-                            <outputDirectory>D:\Dica\Projekti\Plugin Releases</outputDirectory>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
     <build>
         <finalName>DisguiseAPI</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
-                <configuration>
-                    <source>8</source>
-                    <target>8</target>
-                </configuration>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.6.2</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <outputDirectory>${project.build.directory}/internal</outputDirectory>
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <!-- Replace this with your package! -->
-                            <shadedPattern>${project.parent.groupId}.bstats</shadedPattern>
+                            <shadedPattern>net.pinger.disguise.bstats</shadedPattern>
                         </relocation>
                     </relocations>
+                    <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <manifestEntries>
+                                <paperweight-mappings-namespace>mojang</paperweight-mappings-namespace>
+                            </manifestEntries>
+                        </transformer>
+                    </transformers>
                 </configuration>
                 <executions>
                     <execution>
@@ -78,254 +47,48 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.5</version>
+                <configuration>
+                    <workingDirectory>${project.build.directory}</workingDirectory>
+                    <argLine>-javaagent:${settings.localRepository}/org/mockito/mockito-core/5.23.0/mockito-core-5.23.0.jar</argLine>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
-    <repositories>
-        <!-- This adds the Spigot Maven repository to the build -->
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
-            <groupId>${project.parent.groupId}</groupId>
+            <groupId>net.pinger.disguise</groupId>
             <artifactId>API</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-
-        <!-- Random Spigot Version -->
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>1.16.4-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <groupId>net.pinger.disguise</groupId>
+            <artifactId>v26.3</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
-
-        <!-- Bstats -->
+        <dependency>
+            <groupId>net.pinger.disguise.build</groupId>
+            <artifactId>paper-server</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>3.0.0</version>
-            <scope>compile</scope>
         </dependency>
-
-        <!-- 1.8.8 Provider -->
         <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.8.8</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.9.2</version>
+            <scope>test</scope>
         </dependency>
-
-        <!-- 1.9.4 Provider -->
         <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.9.4</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.10 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.10</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.11 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.11</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.12 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.12</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.13 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.13</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.13.1 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.13.1</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.14 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.14</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.15 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.15</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.16.1 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.16.1</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.16.2 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.16.2</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.16.4 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.16.4</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.17 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.17</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.17.1 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.17.1</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.18 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.18</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.18.2 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.18.2</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.19 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.19</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.19.1 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.19.1</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.19.3 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.19.3</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.19.4 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.19.4</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.20 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.20</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.20.2 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.20.2</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.20.3 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.20.3</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.20.6 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.20.6</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.21 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.21</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.21.3 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.21.3</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- 1.21.8 Provider -->
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>v1.21.8</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>compile</scope>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.23.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

@@ -1,65 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>net.pinger.disguise</groupId>
     <artifactId>DisguiseAPI</artifactId>
+    <version>2.0.0</version>
     <packaging>pom</packaging>
-    <version>1.4.0</version>
-
     <properties>
-        <java.version>8</java.version>
+        <maven.compiler.release>25</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <paper.version>26.3.build.223-stable</paper.version>
     </properties>
-
     <modules>
-        <module>v1.8.8</module>
-        <module>v1.9.4</module>
-        <module>v1.10</module>
-        <module>v1.11</module>
-        <module>v1.12</module>
-        <module>v1.13.1</module>
-        <module>v1.13</module>
-        <module>v1.14</module>
-        <module>v1.15</module>
-        <module>v1.16.1</module>
-        <module>v1.16.2</module>
-        <module>v1.16.4</module>
-        <module>v1.17</module>
-        <module>v1.17.1</module>
-        <module>v1.18</module>
-        <module>v1.18.2</module>
-        <module>v1.19</module>
-        <module>v1.19.1</module>
-        <module>v1.19.3</module>
-        <module>v1.19.4</module>
         <module>API</module>
+        <module>v26.3</module>
         <module>Plugin</module>
-        <module>v1.20</module>
-        <module>v1.20.2</module>
-        <module>v1.20.3</module>
-        <module>v1.20.6</module>
-        <module>v1.21</module>
-        <module>v1.21.3</module>
-        <module>v1.21.8</module>
     </modules>
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.15.0</version>
+            </plugin>
+        </plugins>
+    </build>
     <repositories>
         <repository>
-            <id>nms-repo</id>
-            <url>https://repo.codemc.io/repository/nms/</url>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>minecraft-libraries</id>
+            <url>https://libraries.minecraft.net/</url>
         </repository>
     </repositories>
-
-    <dependencies>
-        <!-- SLF4J -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>2.0.6</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
-
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>net.pinger.disguise.build</groupId>
+                <artifactId>paper-server</artifactId>
+                <version>${paper.version}</version>
+                <scope>provided</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

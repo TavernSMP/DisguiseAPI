@@ -31,15 +31,11 @@ import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SpawnEggMeta;
-import org.bukkit.potion.Potion;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -1741,39 +1737,7 @@ public enum XMaterial {
     @SuppressWarnings("deprecation")
     public static XMaterial matchXMaterial(@Nonnull ItemStack item) {
         Objects.requireNonNull(item, "Cannot match null ItemStack");
-        String material = item.getType().name();
-        byte data = (byte) (Data.ISFLAT || item.getType().getMaxDurability() > 0 ? 0 : item.getDurability());
-
-        // Versions 1.9-1.12 didn't really use the items data value.
-        if (!Data.ISFLAT && item.hasItemMeta() && material.equals("MONSTER_EGG") && supports(9)) {
-            ItemMeta meta = item.getItemMeta();
-            if (meta instanceof SpawnEggMeta) {
-                SpawnEggMeta egg = (SpawnEggMeta) meta;
-                material = egg.getSpawnedType().name() + "_SPAWN_EGG";
-            }
-        }
-
-        // Potions used the items data value to store
-        // information about the type of potion in 1.8
-        if (!supports(9) && material.endsWith("ION")) {
-            // There's also 16000+ data value technique, but this is more reliable.
-            return Potion.fromItemStack(item).isSplash() ? SPLASH_POTION : POTION;
-        }
-
-        // Refer to the enum for info.
-        // Currently this is the only material with a non-zero data value
-        // that has been renamed after the flattening update.
-        // If this happens to more materials in the future,
-        // I might have to change then system.
-        if (Data.ISFLAT && !supports(14) && material.equals("CACTUS_GREEN")) return GREEN_DYE;
-
-        // Check FILLED_MAP enum for more info.
-        // if (!Data.ISFLAT && item.hasItemMeta() && item.getItemMeta() instanceof org.bukkit.inventory.meta.MapMeta) return FILLED_MAP;
-
-        // No orElseThrow, I don't want to deal with Java's final variable bullshit.
-        Optional<XMaterial> result = matchDefinedXMaterial(material, data);
-        if (result.isPresent()) return result.get();
-        throw new IllegalArgumentException("Unsupported material from item: " + material + " (" + data + ')');
+        return matchXMaterial(item.getType());
     }
 
     /**
@@ -2209,11 +2173,8 @@ public enum XMaterial {
         private static final int VERSION;
 
         static { // This needs to be right below VERSION because of initialization order.
-            String version = Bukkit.getVersion();
-            Matcher matcher = Pattern.compile("MC: \\d\\.(\\d+)").matcher(version);
-
-            if (matcher.find()) VERSION = Integer.parseInt(matcher.group(1));
-            else throw new IllegalArgumentException("Failed to parse server version from: " + version);
+            String[] version = Bukkit.getBukkitVersion().split("[.-]");
+            VERSION = Integer.parseInt(version[0].equals("1") ? version[1] : version[0]);
         }
 
         /**
