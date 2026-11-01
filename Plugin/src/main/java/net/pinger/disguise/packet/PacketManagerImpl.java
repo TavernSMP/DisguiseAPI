@@ -16,11 +16,12 @@ public class PacketManagerImpl implements PacketManager {
 
     @Override
     public PacketProvider find() {
-        if (!MinecraftServer.isVersion("26.3")) {
-            return null;
-        }
         if (this.provider == null) {
-            this.provider = new net.pinger.disguise.packet.v26_3.PacketProviderImpl(this.plugin);
+            if (MinecraftServer.isVersion("26.3")) {
+                this.provider = new net.pinger.disguise.packet.v26_3.PacketProviderImpl(this.plugin);
+            } else if (MinecraftServer.isVersion("1.21.11")) {
+                this.provider = new net.pinger.disguise.packet.v1_21_11.PacketProviderImpl(this.plugin);
+            }
         }
         return this.provider;
     }
@@ -32,6 +33,7 @@ public class PacketManagerImpl implements PacketManager {
 
     @Override
     public Set<Class<? extends PacketProvider>> getRegisteredProviders() {
-        return Set.of(net.pinger.disguise.packet.v26_3.PacketProviderImpl.class);
+        return Set.of(net.pinger.disguise.packet.v26_3.PacketProviderImpl.class,
+                net.pinger.disguise.packet.v1_21_11.PacketProviderImpl.class);
     }
 }

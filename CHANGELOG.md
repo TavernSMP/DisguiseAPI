@@ -2,6 +2,11 @@
 All notable releases after **1.2.0** will be mentioned here, along with the information
 regarding the given release.
 
+## Unreleased
+- Add a Paper 1.21.11 adapter alongside the existing Paper 26.3 adapter.
+- Emit Java 21 bytecode and lower plugin metadata to 1.21.11, allowing Java 21 on Paper 1.21.11.
+- Prepare either server dependency with Paperweight and run compatibility checks against both versions.
+
 ## 2.0.0 - (Date: 2026-10-26)
 - Target Paper 26.3 and Java 25 exclusively; remove all older Minecraft adapters.
 - Keep Maven for compilation, testing, packaging, and installation, with Paperweight preparing the server dependency.

@@ -7,9 +7,9 @@ plugins {
 }
 
 group = "net.pinger.disguise.build"
-version = "26.3.build.223-stable"
+version = providers.gradleProperty("paperVersion").getOrElse("26.3.build.223-stable")
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(if (version.toString().startsWith("1.")) 21 else 25))
 
 repositories {
     mavenCentral()

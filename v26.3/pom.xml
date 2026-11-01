@@ -19,6 +19,7 @@
         <dependency>
             <groupId>net.pinger.disguise.build</groupId>
             <artifactId>paper-server</artifactId>
+            <version>26.3.build.223-stable</version>
         </dependency>
     </dependencies>
 </project>

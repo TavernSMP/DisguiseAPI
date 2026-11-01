@@ -8,13 +8,16 @@
     <version>2.0.0</version>
     <packaging>pom</packaging>
     <properties>
-        <maven.compiler.release>25</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <paper.version>26.3.build.223-stable</paper.version>
+        <paper.1.21.11.version>1.21.11-R0.1-SNAPSHOT</paper.1.21.11.version>
+        <minecraft.version>26.3</minecraft.version>
     </properties>
     <modules>
         <module>API</module>
         <module>v26.3</module>
+        <module>v1.21.11</module>
         <module>Plugin</module>
     </modules>
     <build>
@@ -36,6 +39,15 @@
             <url>https://libraries.minecraft.net/</url>
         </repository>
     </repositories>
+    <profiles>
+        <profile>
+            <id>paper-1.21.11</id>
+            <properties>
+                <paper.version>${paper.1.21.11.version}</paper.version>
+                <minecraft.version>1.21.11</minecraft.version>
+            </properties>
+        </profile>
+    </profiles>
     <dependencyManagement>
         <dependencies>
             <dependency>

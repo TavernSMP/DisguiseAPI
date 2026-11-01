@@ -53,6 +53,9 @@
                 <version>3.5.5</version>
                 <configuration>
                     <workingDirectory>${project.build.directory}</workingDirectory>
+                    <systemPropertyVariables>
+                        <disguise.test.minecraftVersion>${minecraft.version}</disguise.test.minecraftVersion>
+                    </systemPropertyVariables>
                     <argLine>-javaagent:${settings.localRepository}/org/mockito/mockito-core/5.23.0/mockito-core-5.23.0.jar</argLine>
                 </configuration>
             </plugin>
@@ -67,6 +70,11 @@
         <dependency>
             <groupId>net.pinger.disguise</groupId>
             <artifactId>v26.3</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.pinger.disguise</groupId>
+            <artifactId>v1.21.11</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>

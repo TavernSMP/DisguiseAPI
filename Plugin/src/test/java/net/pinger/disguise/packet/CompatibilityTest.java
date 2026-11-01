@@ -1,4 +1,4 @@
-package net.pinger.disguise.packet.v26_3;
+package net.pinger.disguise.packet;
 
 import com.google.common.collect.HashMultimap;
 import com.mojang.authlib.GameProfile;
@@ -10,7 +10,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.pinger.disguise.DisguisePlugin;
 import net.pinger.disguise.context.GameProfileContext;
 import net.pinger.disguise.item.XMaterial;
-import net.pinger.disguise.packet.PacketManagerImpl;
 import net.pinger.disguise.server.MinecraftServer;
 import net.pinger.disguise.skin.Skin;
 import org.bukkit.Bukkit;
@@ -19,6 +18,7 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockMakers;
 
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -28,9 +28,11 @@ import static org.mockito.Mockito.*;
 
 class CompatibilityTest {
 
+    private static final String VERSION = System.getProperty("disguise.test.minecraftVersion", "26.3");
+
     private CraftPlayer player;
     private ServerPlayer handle;
-    private PacketProviderImpl provider;
+    private PacketProvider provider;
     private GameProfile original;
     private Skin skin;
 
@@ -39,8 +41,8 @@ class CompatibilityTest {
         SharedConstants.tryDetectVersion();
         Bootstrap.bootStrap();
         Server server = mock(Server.class);
-        when(server.getBukkitVersion()).thenReturn("26.3-R0.1-SNAPSHOT");
-        when(server.getVersion()).thenReturn("Paper 26.3 (MC: 26.3)");
+        when(server.getBukkitVersion()).thenReturn(VERSION + "-R0.1-SNAPSHOT");
+        when(server.getVersion()).thenReturn("Paper " + VERSION + " (MC: " + VERSION + ")");
         when(server.getName()).thenReturn("Paper");
         when(server.getLogger()).thenReturn(Logger.getLogger("DisguiseAPI-test"));
         Bukkit.setServer(server);
@@ -60,7 +62,7 @@ class CompatibilityTest {
         skin = mock(Skin.class);
         when(skin.getValue()).thenReturn("new-value");
         when(skin.getSignature()).thenReturn("new-signature");
-        provider = new PacketProviderImpl(mock(DisguisePlugin.class));
+        provider = new PacketManagerImpl(mock(DisguisePlugin.class)).find();
     }
 
     @Test
@@ -109,21 +111,36 @@ class CompatibilityTest {
     }
 
     @Test
-    void resolvesOnlyModernAdapterAndCachesIt() {
+    void resolvesMatchingAdapterAndCachesIt() {
         PacketManagerImpl manager = new PacketManagerImpl(mock(DisguisePlugin.class));
-        assertEquals(1, manager.getProviderCount());
-        assertTrue(manager.getRegisteredProviders().contains(PacketProviderImpl.class));
-        assertInstanceOf(PacketProviderImpl.class, manager.find());
+        assertEquals(2, manager.getProviderCount());
+        assertTrue(manager.getRegisteredProviders().contains(net.pinger.disguise.packet.v26_3.PacketProviderImpl.class));
+        assertTrue(manager.getRegisteredProviders().contains(net.pinger.disguise.packet.v1_21_11.PacketProviderImpl.class));
+        Class<? extends PacketProvider> expected = VERSION.equals("1.21.11")
+                ? net.pinger.disguise.packet.v1_21_11.PacketProviderImpl.class
+                : net.pinger.disguise.packet.v26_3.PacketProviderImpl.class;
+        assertInstanceOf(expected, manager.find());
+        assertSame(manager.find(), manager.getProvider());
         assertSame(manager.find(), manager.find());
     }
 
     @Test
+    void rejectsUnsupportedServers() {
+        try (var ignored = mockStatic(MinecraftServer.class, withSettings().mockMaker(MockMakers.INLINE))) {
+            PacketManagerImpl manager = new PacketManagerImpl(mock(DisguisePlugin.class));
+            assertNull(manager.find());
+            assertNull(manager.getProvider());
+        }
+    }
+
+    @Test
     void recognizesNewVersionFormatForProvidersAndMaterials() {
-        assertEquals("26.3", MinecraftServer.CURRENT.getVersion());
+        assertEquals(VERSION, SharedConstants.getCurrentVersion().name());
+        assertEquals(VERSION, MinecraftServer.CURRENT.getVersion());
         assertTrue(MinecraftServer.atLeast("1.21.8"));
-        assertTrue(MinecraftServer.atLeast("26.2"));
+        assertEquals(VERSION.equals("26.3"), MinecraftServer.atLeast("26.2"));
         assertFalse(MinecraftServer.atLeast("26.4"));
-        assertEquals("1.21.8", MinecraftServer.fromRaw("1.21.8-R0.1-SNAPSHOT").getVersion());
+        assertEquals("1.21.11", MinecraftServer.fromRaw("1.21.11-R0.1-SNAPSHOT").getVersion());
         assertTrue(XMaterial.supports(21));
         assertNotNull(XMaterial.PLAYER_HEAD.parseMaterial());
     }
