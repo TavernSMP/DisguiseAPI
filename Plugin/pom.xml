@@ -30,13 +30,6 @@
                             <shadedPattern>net.pinger.disguise.bstats</shadedPattern>
                         </relocation>
                     </relocations>
-                    <transformers>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <manifestEntries>
-                                <paperweight-mappings-namespace>mojang</paperweight-mappings-namespace>
-                            </manifestEntries>
-                        </transformer>
-                    </transformers>
                 </configuration>
                 <executions>
                     <execution>
@@ -56,11 +49,19 @@
                     <systemPropertyVariables>
                         <disguise.test.minecraftVersion>${minecraft.version}</disguise.test.minecraftVersion>
                     </systemPropertyVariables>
+                    <!-- Tests exercise Mojang-mapped classes; the packaged 1.21.11 adapter is remapped for Spigot. -->
+                    <classpathDependencyExcludes>
+                        <classpathDependencyExclude>net.pinger.disguise:v1.21.11</classpathDependencyExclude>
+                    </classpathDependencyExcludes>
+                    <additionalClasspathElements>
+                        <additionalClasspathElement>${maven.multiModuleProjectDirectory}/v1.21.11/target/classes</additionalClasspathElement>
+                    </additionalClasspathElements>
                     <argLine>-javaagent:${settings.localRepository}/org/mockito/mockito-core/5.23.0/mockito-core-5.23.0.jar</argLine>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
     <dependencies>
         <dependency>
             <groupId>net.pinger.disguise</groupId>
@@ -78,8 +79,11 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.pinger.disguise.build</groupId>
-            <artifactId>paper-server</artifactId>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>${spigot.version}</version>
+            <classifier>${spigot.classifier}</classifier>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>

@@ -3,9 +3,11 @@ All notable releases after **1.2.0** will be mentioned here, along with the info
 regarding the given release.
 
 ## Unreleased
+- Replace Paper-only profile refresh with Spigot NMS packets and support private immutable profiles.
+- Remap the 1.21.11 adapter for Spigot and provide a local Windows build command.
 - Add a Paper 1.21.11 adapter alongside the existing Paper 26.3 adapter.
 - Emit Java 21 bytecode and lower plugin metadata to 1.21.11, allowing Java 21 on Paper 1.21.11.
-- Prepare either server dependency with Paperweight and run compatibility checks against both versions.
+- Use locally installed Spigot BuildTools dependencies, including 1.21.11 R0.2, with a direct Maven build.
 
 ## 2.0.0 - (Date: 2026-10-26)
 - Target Paper 26.3 and Java 25 exclusively; remove all older Minecraft adapters.

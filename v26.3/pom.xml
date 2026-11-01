@@ -8,8 +8,10 @@
         <artifactId>DisguiseAPI</artifactId>
         <version>2.0.0</version>
     </parent>
+
     <artifactId>v26.3</artifactId>
-    <dependencies>
+
+<dependencies>
         <dependency>
             <groupId>net.pinger.disguise</groupId>
             <artifactId>API</artifactId>
@@ -17,9 +19,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>net.pinger.disguise.build</groupId>
-            <artifactId>paper-server</artifactId>
-            <version>26.3.build.223-stable</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>${spigot.26.3.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

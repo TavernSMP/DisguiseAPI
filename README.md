@@ -1,48 +1,65 @@
 <p align="center">
-	<img src = "https://img.shields.io/badge/Supports-Paper%201.21.11%20%26%2026.3-%3Cbrightgreen%3E">
+	<img src = "https://img.shields.io/badge/Supports-Spigot%201.21.11%20%26%2026.3-%3Cbrightgreen%3E">
 	<img src = "https://img.shields.io/badge/-Library-blue">
 	<img src = "https://img.shields.io/badge/-Easy%20to%20use-orange">
 </p>
 
 <img src="https://imgur.com/xCRKtdh.png" width="120px" align="right"></img>
 # DisguiseAPI
-DisguiseAPI is an open-source library for changing player skins and nicknames on Paper 1.21.11 and 26.3.
+DisguiseAPI is an open-source library for changing player skins and nicknames on Spigot/Paper 1.21.11 and 26.3.
 
 ### Building
 
-DisguiseAPI supports **Paper 1.21.11 and 26.3**. Build with **JDK 25**; the plugin uses Java 21
-bytecode so it also loads on Paper 1.21.11 running **Java 21**. Paper 26.3 requires Java 25.
-The Maven reactor contains the API, both version adapters, and plugin modules.
+Build with **JDK 25**. The plugin emits Java 21 bytecode for 1.21.11 servers; 26.3 servers require Java 25.
+Maven uses standard **Spigot BuildTools** artifacts, with no custom Paper dependency or Gradle preparation.
 
-Paperweight prepares both Paper server dependencies for Maven. Run these once per development-bundle
-version (PowerShell, from the project root; have JDK 21 and JDK 25 available to Gradle):
+On this Windows computer, open PowerShell in the project directory and run:
 
 ```powershell
-.\build-tools\paperweight\gradlew.bat -p .\build-tools\paperweight -g D:\cache\.gradle "-Dmaven.repo.local=D:\cache\.maven\repository" publishToMavenLocal
-.\build-tools\paperweight\gradlew.bat -p .\build-tools\paperweight -g D:\cache\.gradle "-Dmaven.repo.local=D:\cache\.maven\repository" -PpaperVersion=1.21.11-R0.1-SNAPSHOT publishToMavenLocal
+.\build.cmd
 ```
 
-Then compile, test, and package the plugin against each server version with Maven:
+This runs `clean verify` using JDK 25 from `D:\Java JDK\jdk-25.0.4.7-hotspot` and Maven from
+`D:\SpigotMC\FreshBuildTools\apache-maven-3.9.6`. It leaves the finished plugin at
+`Plugin\target\DisguiseAPI.jar`. To install the API and plugin into local Maven for your other projects:
 
 ```powershell
-mvn "-Dmaven.repo.local=D:\cache\.maven\repository" clean verify
-mvn "-Dmaven.repo.local=D:\cache\.maven\repository" "-Ppaper-1.21.11" clean verify
+.\build.cmd clean install
 ```
 
-The default test runtime is Paper 26.3; the `paper-1.21.11` profile switches the shared API and test
-runtime to Paper 1.21.11. Each adapter always compiles against its own server dependency. Use Maven's
-`-Djvm="path\to\jdk-21\bin\java.exe"` with the 1.21.11 profile to run tests on Java 21 while building
-with JDK 25.
+The local `.mvn/maven.config` selects `D:\cache\.maven\repository`, where BuildTools already installed:
 
-Deploy `Plugin/target/DisguiseAPI.jar`. This is also Maven's main plugin artifact for `install`.
-It contains both adapters and has the Mojang mapping marker. Server classes and test dependencies
-are not bundled. No Spigot BuildTools runs or SpecialSource remapping steps are required.
-The first dependency-preparation run needs an internet connection; subsequent plugin builds use Maven.
+| Module | Dependency |
+| --- | --- |
+| API | `org.spigotmc:spigot-api:1.21.11-R0.2-SNAPSHOT` and Mojang Authlib |
+| 1.21.11 adapter | `org.spigotmc:spigot:1.21.11-R0.2-SNAPSHOT:remapped-mojang` |
+| 26.3 adapter | `org.spigotmc:spigot:26.3-R0.1-SNAPSHOT` |
 
-Regression tests run against both server dependencies and cover version-specific adapter selection,
-unsupported-version rejection, immutable skin/name updates and restoration, texture clearing,
-profile creation, refresh delegation, and version parsing. Visual skin refresh with connected players
-still requires a server test.
+No additional BuildTools run is needed on this computer. For a fresh setup, follow the
+[Spigot BuildTools instructions](https://www.spigotmc.org/wiki/buildtools/): build 1.21.11 with Java 21
+and `--rev 1.21.11 --remapped`, then 26.3 with Java 25 and `--rev 26.3`. Install into the same local Maven
+repository used by this project. The installed 1.21.11 BuildTools revision is **R0.2**, not R0.1.
+
+With JDK 25 and Maven on PATH, the standard command is `mvn clean verify`. In IntelliJ, reload the root
+`pom.xml`, select **JDK 25** as the project SDK and Maven runner JRE, and use the repository from
+`.mvn/maven.config` (`D:\cache\.maven\repository`). If IntelliJ overrides it, set that path in Maven settings.
+The checked-in `build.cmd` contains the paths for this computer; adjust them on another machine.
+The Maven repository override in `.mvn/maven.config` is local and ignored by Git.
+
+The default regression tests use Spigot 26.3. To test against Spigot 1.21.11 on Java 21:
+
+```powershell
+.\build.cmd "-Pspigot-1.21.11" "-Djvm=D:\Java JDK\jdk-21.0.4.7-hotspot\bin\java.exe" clean verify
+```
+
+Both adapters compile against their own server version. SpecialSource remaps only the 1.21.11 adapter
+from Mojang names to Spigot names during packaging. The final JAR includes both adapters and excludes
+server/test classes. It intentionally has no global Mojang mapping marker: Paper 1.21.11 must remap
+the Spigot adapter when loading it. Paper's plugin remapping must remain enabled on that version.
+
+Tests cover adapter selection, unsupported versions, private immutable profile replacement and
+restoration, texture clearing, profile creation, NMS refresh packet order and state resynchronization,
+and version parsing. Visual skin refresh with connected players still requires a server test.
 
 ### Dependency
 
